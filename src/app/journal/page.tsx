@@ -8,19 +8,22 @@ export const metadata: Metadata = {
   description: "All learning journal entries — wins, confusions, and reflections.",
 };
 
-export default async function JournalIndexPage({
-  searchParams,
-}: {
-  searchParams: { tag?: string };
-}) {
-  const tag = searchParams.tag;
+export default async function JournalIndexPage({ searchParams }: any) {
+  const { tag } = await searchParams;
 
   const journals = await prisma.journal.findMany({
     where: {
       published: true,
       ...(tag ? { tags: { has: tag } } : {}),
     },
-    select: { id: true, title: true, slug: true, content: true, tags: true, createdAt: true },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      content: true,
+      tags: true,
+      createdAt: true,
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -33,6 +36,7 @@ export default async function JournalIndexPage({
     <div style={{ paddingTop: 80 }}>
       <section style={{ padding: "60px clamp(1.5rem,8vw,8rem) 80px" }}>
         <div className="section-label">Journal</div>
+
         <h1
           className="mb-3"
           style={{
@@ -45,7 +49,11 @@ export default async function JournalIndexPage({
         >
           Learning Log
         </h1>
-        <p className="text-base leading-relaxed max-w-[560px] mb-10" style={{ color: "var(--text2)" }}>
+
+        <p
+          className="text-base leading-relaxed max-w-[560px] mb-10"
+          style={{ color: "var(--text2)" }}
+        >
           {journals.length} {journals.length === 1 ? "entry" : "entries"} —
           honest, unfiltered notes from daily study sessions.
         </p>
@@ -64,6 +72,7 @@ export default async function JournalIndexPage({
             >
               All
             </a>
+
             {allTags.map((t) => (
               <a
                 key={t}
@@ -86,7 +95,10 @@ export default async function JournalIndexPage({
             className="text-center py-20 rounded-[20px]"
             style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
           >
-            <p className="text-base mb-1" style={{ color: "var(--text2)" }}>No entries found{tag ? ` for "${tag}"` : ""}.</p>
+            <p className="text-base mb-1" style={{ color: "var(--text2)" }}>
+              No entries found{tag ? ` for "${tag}"` : ""}.
+            </p>
+
             {tag && (
               <a href="/journal" className="text-sm" style={{ color: "var(--accent)" }}>
                 Clear filter
