@@ -1,5 +1,12 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect, notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import JournalForm from "@/components/JournalForm";
+import Link from "next/link";
+
 export default async function EditJournalPage({ params }: any) {
-  const { id } = await params; // ✅ THIS IS THE FIX
+  const { id } = await params;
 
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
