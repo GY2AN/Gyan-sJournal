@@ -1,5 +1,6 @@
 // src/app/dashboard/edit/[id]/page.tsx
 
+export const runtime = "nodejs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
