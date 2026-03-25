@@ -1,3 +1,5 @@
+// src/app/dashboard/edit/[id]/page.tsx
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
@@ -9,6 +11,7 @@ export default async function EditJournalPage({ params }: any) {
   const { id } = await params;
 
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.id) {
     redirect(`/login?callbackUrl=/dashboard/edit/${id}`);
   }
@@ -18,7 +21,10 @@ export default async function EditJournalPage({ params }: any) {
   });
 
   if (!journal) notFound();
-  if (journal.userId !== session.user.id) redirect("/dashboard");
+
+  if (journal.userId !== session.user.id) {
+    redirect("/dashboard");
+  }
 
   return (
     <div style={{ paddingTop: 80 }}>
