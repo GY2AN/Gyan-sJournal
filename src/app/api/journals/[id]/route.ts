@@ -15,13 +15,16 @@ const updateSchema = z.object({
   published: z.boolean().optional(),
 });
 
+// ✅ FIXED GET
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
     const journal = await prisma.journal.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { user: { select: { id: true, name: true, email: true } } },
     });
 
@@ -35,10 +38,13 @@ export async function GET(
   }
 }
 
+// ✅ FIXED PATCH
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,7 +52,7 @@ export async function PATCH(
 
   try {
     const journal = await prisma.journal.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!journal) {
@@ -60,7 +66,7 @@ export async function PATCH(
     const data = updateSchema.parse(body);
 
     const updated = await prisma.journal.update({
-      where: { id: params.id },
+      where: { id },
       data,
       include: { user: { select: { id: true, name: true, email: true } } },
     });
@@ -74,10 +80,13 @@ export async function PATCH(
   }
 }
 
+// ✅ FIXED DELETE
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -85,7 +94,7 @@ export async function DELETE(
 
   try {
     const journal = await prisma.journal.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!journal) {
@@ -95,7 +104,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.journal.delete({ where: { id: params.id } });
+    await prisma.journal.delete({ where: { id } });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Failed to delete journal" }, { status: 500 });
