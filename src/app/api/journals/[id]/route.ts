@@ -16,10 +16,7 @@ const updateSchema = z.object({
 });
 
 // ✅ FIXED GET
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, context: any) {
   const { id } = context.params;
 
   try {
@@ -39,10 +36,7 @@ export async function GET(
 }
 
 // ✅ FIXED PATCH
-export async function PATCH(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, context: any) {
   const { id } = context.params;
 
   const session = await getServerSession(authOptions);
@@ -58,6 +52,7 @@ export async function PATCH(
     if (!journal) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
     if (journal.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -76,15 +71,13 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors }, { status: 400 });
     }
+
     return NextResponse.json({ error: "Failed to update journal" }, { status: 500 });
   }
 }
 
 // ✅ FIXED DELETE
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: any) {
   const { id } = context.params;
 
   const session = await getServerSession(authOptions);
@@ -100,11 +93,14 @@ export async function DELETE(
     if (!journal) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
     if (journal.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.journal.delete({ where: { id } });
+    await prisma.journal.delete({
+      where: { id },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
