@@ -7,16 +7,18 @@ import JournalForm from "@/components/JournalForm";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-type Props = { params: { id: string } };
-
 export const metadata: Metadata = { title: "Edit Entry — Dashboard" };
 
-export default async function EditJournalPage({ params }: Props) {
+export default async function EditJournalPage({ params }: any) {
+  const { id } = params;
+
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect(`/login?callbackUrl=/dashboard/edit/${params.id}`);
+  if (!session?.user?.id) {
+    redirect(`/login?callbackUrl=/dashboard/edit/${id}`);
+  }
 
   const journal = await prisma.journal.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!journal) notFound();
@@ -33,7 +35,9 @@ export default async function EditJournalPage({ params }: Props) {
           >
             ← Back to Dashboard
           </Link>
+
           <div className="section-label">Edit Entry</div>
+
           <h1
             style={{
               fontFamily: "'Instrument Serif', serif",
