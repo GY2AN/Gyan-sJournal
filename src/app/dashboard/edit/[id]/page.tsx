@@ -1,16 +1,5 @@
-// src/app/dashboard/edit/[id]/page.tsx
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect, notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import JournalForm from "@/components/JournalForm";
-import Link from "next/link";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = { title: "Edit Entry — Dashboard" };
-
 export default async function EditJournalPage({ params }: any) {
-  const { id } = params;
+  const { id } = await params; // ✅ THIS IS THE FIX
 
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
